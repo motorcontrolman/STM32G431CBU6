@@ -1,0 +1,4 @@
+VectorControl.c:40:6:VectorControlTasks	2
+VectorControl.c:59:6:OpenLoopTasks	2
+VectorControl.c:78:6:InitVectorControl	1
+VectorControl.c:248:6:calcElectAngleEstimate	2

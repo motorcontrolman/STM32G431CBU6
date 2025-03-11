@@ -1,0 +1,7 @@
+../Core/MCLIB/GeneralFunctions.c:14:7:gfDivideAvoidZero	0	static
+../Core/MCLIB/GeneralFunctions.c:25:7:gfWrapTheta	8	static
+../Core/MCLIB/GeneralFunctions.c:35:6:gfOmega2Theta	8	static
+../Core/MCLIB/GeneralFunctions.c:43:7:gUpperLowerLimit	0	static
+../Core/MCLIB/GeneralFunctions.c:49:6:gOffDuty	0	static
+../Core/MCLIB/GeneralFunctions.c:56:6:gLPF	0	static
+../Core/MCLIB/GeneralFunctions.c:69:6:gRateLimit	0	static

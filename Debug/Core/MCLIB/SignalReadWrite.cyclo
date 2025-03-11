@@ -1,0 +1,13 @@
+SignalReadWrite.c:30:9:readButton1	1
+SignalReadWrite.c:38:10:readHallInputCaptureCnt	1
+SignalReadWrite.c:48:10:readPropoInputCaptureCnt	1
+SignalReadWrite.c:58:7:readPropoDuty	6
+SignalReadWrite.c:102:7:readTimeInterval	2
+SignalReadWrite.c:124:7:readVolume	2
+SignalReadWrite.c:136:7:readVdc	1
+SignalReadWrite.c:144:6:readCurrent	1
+SignalReadWrite.c:155:6:readElectFreqFromHallSignal	3
+SignalReadWrite.c:187:6:writeOutputMode	2
+SignalReadWrite.c:204:6:writeDuty	1
+SignalReadWrite.c:212:6:writeFreeRunCnt	1
+SignalReadWrite.c:216:10:readFreeRunCnt	1

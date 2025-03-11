@@ -1,0 +1,4 @@
+../Core/MCLIB/VectorControl.c:40:6:VectorControlTasks	160	static
+../Core/MCLIB/VectorControl.c:59:6:OpenLoopTasks	104	static
+../Core/MCLIB/VectorControl.c:78:6:InitVectorControl	64	static
+../Core/MCLIB/VectorControl.c:248:6:calcElectAngleEstimate	48	static

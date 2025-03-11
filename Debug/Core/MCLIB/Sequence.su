@@ -1,0 +1,2 @@
+../Core/MCLIB/Sequence.c:39:6:Sequence_Low_Freq	64	static
+../Core/MCLIB/Sequence.c:91:6:Sequence_High_Freq	120	static
