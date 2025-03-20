@@ -17,8 +17,9 @@
 #define IU2_ADOffSET			1986
 #define IV2_ADOffSET			1967
 #define IW2_ADOffSET			1974
-//#define AD2CURRENT			-0.00193586253f // for IHM07M1
-#define AD2CURRENT			0.085625f // for marutai tekito
+// #define AD2CURRENT			-0.00193586253f // for IHM07M1
+// #define AD2CURRENT			0.085625f // for marutai tekito
+#define AD2CURRENT			0.0032f // for roller485 DRV8311:0.25V/A.
 //#define AD2CURRENT			-0.358844273 // for CQKIT
 #define AD2VOLTAGE			0.0154305f; // for IHM07M1 1/(9.31/(9.31+169)*4096/3.3V)
 //#define AD2VOLTAGE			0.025210084f; // for CQKIT

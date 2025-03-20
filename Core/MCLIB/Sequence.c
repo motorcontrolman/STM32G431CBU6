@@ -36,6 +36,7 @@ static inline void slctElectAngleFromPosMode(uint8_t posMode, struct SensorData 
 static inline void slctCntlFromDrvMode(uint8_t drvMode, struct SensorData sensData, struct VectorControlData *vectorControlData, float* Duty, int8_t* outputMode);
 static inline void calcCurrentRef(uint8_t drvMode, struct VectorControlData *vectorControlData);
 
+
 void Sequence_Low_Freq(void){
 
 	uint8_t posMode_pre;
@@ -96,7 +97,7 @@ void Sequence_High_Freq(void){
 	readCurrent(sSensData.Iuvw_AD, sSensData.Iuvw_AD_Offset, sSensData.Iuvw);
 
 	// for debug
-	sPosMode = POSMODE_FREERUN;
+	sPosMode = POSMODE_ANGLESENS;//POSMODE_FREERUN;//
 	sDrvMode = DRVMODE_OPENLOOP;
 	sElectAngVeloRefRateLimit = TWOPI * 10.0f;
 
@@ -196,7 +197,7 @@ static inline void slctElectAngleFromPosMode(uint8_t posMode, struct SensorData 
 
 
 		//sensData->electAngle = gfWrapTheta(sElectAngleFreerun);
-		sensData->electAngle = gTheta;
+		sensData->electAngle = 0;
 
 		flgPLL = 1;
 		calcElectAngle(gHall, gElectFreq, flgPLL, &electAngle, &electAngVelo);
@@ -221,7 +222,7 @@ static inline void slctElectAngleFromPosMode(uint8_t posMode, struct SensorData 
 		sensData->electAngVelo = sElectAngleEstimateData.electAngVeloEstimate;
 		break;
 	case POSMODE_ANGLESENS:
-		sensData->electAngle = gTheta;
+		sensData->electAngle = gTheta + PI*0.5f;
 		sensData->electAngVelo = sElectAngleEstimateData.electAngVeloEstimate;
 		break;
 
@@ -258,7 +259,7 @@ void inline slctCntlFromDrvMode(uint8_t drvMode, struct SensorData sensData, str
 			gOffDuty(Duty, outputMode);
 			break;
 		case DRVMODE_OPENLOOP:
-			VamRef = sSensData.Vdc * SQRT3DIV2_DIV2 * gPropoDuty;// * gButton1;//gVolume;
+			VamRef = sSensData.Vdc * SQRT3DIV2_DIV2 * gPropoDuty * gButton1;//gVolume;
 			OpenLoopTasks(VamRef, sensData, vectorControlData, Duty, outputMode);
 			break;
 		case DRVMODE_VECTORCONTROL:

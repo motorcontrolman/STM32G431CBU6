@@ -72,7 +72,7 @@ static void MX_TIM8_Init(void);
 uint16_t data_t[2];
 uint16_t data_r[2];
 float angle_get;
-float angle_offset = 8817.0f;
+float angle_offset = 4615.0f;
 float angle_corrected;
 //uint16_t angle_corrected;
 //uint16_t eangle_get;

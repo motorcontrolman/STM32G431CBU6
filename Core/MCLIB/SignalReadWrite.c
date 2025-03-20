@@ -87,8 +87,8 @@ float readPropoDuty(void){
 				propoInputCaptureCntDiff += (float)inputCaptureCntMax;
 
 			// Default 1489 Max 1857 Min 1119 Ampritude:370
-			sPropoDuty = (propoInputCaptureCntDiff - 1489.0f) * 0.0027f;
-			if(sPropoDuty < 0.0f) sPropoDuty = 0.0f;
+			sPropoDuty = 0.3f *(propoInputCaptureCntDiff - 1489.0f) * 0.0027f;
+			//if(sPropoDuty < 0.0f) sPropoDuty = 0.0f;
 
 		}
 	}
