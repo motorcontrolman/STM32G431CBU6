@@ -23,6 +23,14 @@ static uint8_t sPropoState_pre;
 static float sPropoDuty = 0;
 float propoInputCaptureCntDiff;
 
+static uint16_t sPropoInputCaptureCntRise2;
+static uint16_t sPropoInputCaptureCntFall2;
+static uint8_t sPropoState2;
+static uint8_t sPropoState_pre2;
+static float sPropoDuty2 = 0;
+float propoInputCaptureCntDiff2;
+
+
 static uint16_t inputCaptureCnt8;
 
 uint16_t Bemf_AD[3];
@@ -47,11 +55,10 @@ uint32_t readHallInputCaptureCnt(void){
 
 uint16_t readPropoInputCaptureCnt(void){
 	// Read Input Capture Count of GPIO
-	// CCR2:TIM3 Channel2 = Propo
+	// CCR1:TIM8 Channel1 = Propo
 	volatile uint16_t inputCaptureCnt;
 
 	inputCaptureCnt = TIM8 -> CCR1;
-	inputCaptureCnt8 = inputCaptureCnt;
 	return inputCaptureCnt;
 }
 
@@ -87,13 +94,66 @@ float readPropoDuty(void){
 				propoInputCaptureCntDiff += (float)inputCaptureCntMax;
 
 			// Default 1489 Max 1857 Min 1119 Ampritude:370
-			sPropoDuty = 0.3f *(propoInputCaptureCntDiff - 1489.0f) * 0.0027f;
+			sPropoDuty = 1.0f *(propoInputCaptureCntDiff - 1489.0f) * 0.0027f;
 			//if(sPropoDuty < 0.0f) sPropoDuty = 0.0f;
 
 		}
 	}
 
 	propoDuty = sPropoDuty;
+	return propoDuty;
+
+}
+
+uint16_t readPropoInputCaptureCnt2(void){
+	// Read Input Capture Count of GPIO
+	// CCR4:TIM3 Channel4 = Propo2
+	volatile uint16_t inputCaptureCnt;
+
+	inputCaptureCnt = TIM3 -> CCR4;
+	inputCaptureCnt8 = inputCaptureCnt;
+	return inputCaptureCnt;
+}
+
+float readPropoDuty2(void){
+	float propoDuty;
+
+
+
+	uint32_t inputCaptureCntMax;
+	uint32_t inputCaptureCntHalf;
+	float preScaler;
+
+	sPropoState_pre2 = sPropoState2;
+	sPropoState2 = HAL_GPIO_ReadPin(GPIOB, Propo2_Pin) & 0b00000001;
+
+	if(sPropoState2) // sPropoState = ON
+		sPropoInputCaptureCntRise2 = readPropoInputCaptureCnt2();
+	else			// sPropoState = OFF
+	{
+		sPropoInputCaptureCntFall2 = readPropoInputCaptureCnt2();
+
+		// Detect Falling Edge, Update propoDuty
+		if(sPropoState2 == 0 && sPropoState_pre2 == 1)
+		{
+
+			inputCaptureCntMax = TIM3 -> ARR;
+			inputCaptureCntHalf = (inputCaptureCntMax + 1) >> 1;
+			preScaler = (float)(TIM3 -> PSC);
+
+			propoInputCaptureCntDiff2 = (float)sPropoInputCaptureCntFall2 - (float)sPropoInputCaptureCntRise2;
+
+			if( propoInputCaptureCntDiff2 < - (float)inputCaptureCntHalf)
+				propoInputCaptureCntDiff2 += (float)inputCaptureCntMax;
+
+			// Default 1489 Max 1857 Min 1119 Ampritude:370
+			sPropoDuty2 = 1.0f *(propoInputCaptureCntDiff2 - 1489.0f) * 0.0027f;
+			//if(sPropoDuty < 0.0f) sPropoDuty = 0.0f;
+
+		}
+	}
+
+	propoDuty = sPropoDuty2;
 	return propoDuty;
 
 }

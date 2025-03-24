@@ -69,8 +69,8 @@ void Error_Handler(void);
 #define SYS_SW_GPIO_Port GPIOA
 #define Propo_Pin GPIO_PIN_15
 #define Propo_GPIO_Port GPIOA
-#define SYS_SW2_Pin GPIO_PIN_7
-#define SYS_SW2_GPIO_Port GPIOB
+#define Propo2_Pin GPIO_PIN_7
+#define Propo2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 uint8_t SPI_TransmitReceive(SPI_HandleTypeDef * hspi, uint16_t TxData, uint16_t *RxData);

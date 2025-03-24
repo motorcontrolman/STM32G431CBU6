@@ -29,9 +29,11 @@
 uint8_t readButton1(void);
 uint32_t readHallInputCaptureCnt(void);
 uint16_t readPropoInputCaptureCnt(void);
+uint16_t readPropoInputCaptureCnt2(void);
 
 float readTimeInterval(uint32_t inputCaptureCnt, uint32_t inputCaptureCnt_pre);
 float readPropoDuty(void);
+float readPropoDuty2(void);
 float readVolume(void);
 float readVdc(void);
 void readCurrent(uint16_t* Iuvw_AD, float* Iuvw_AD_Offset, float* Iuvw);

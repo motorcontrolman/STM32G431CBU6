@@ -29,6 +29,8 @@ extern float gVdc;
 extern float gTwoDivVdc;
 extern float gVolume;
 extern float gPropoDuty;
+extern float gPropoDuty2;
+
 extern float gIuvw[3];
 extern uint16_t gIuvw_AD[3];
 extern float gIuvw2[3];

@@ -209,13 +209,13 @@ void ADC1_2_IRQHandler(void)
   HAL_ADC_IRQHandler(&hadc1);
   /* USER CODE BEGIN ADC1_2_IRQn 1 */
 
-  HAL_GPIO_TogglePin(SYS_SW2_GPIO_Port, SYS_SW2_Pin);
+//  HAL_GPIO_TogglePin(SYS_SW2_GPIO_Port, SYS_SW2_Pin);
 
 	// Sequence Control
 	Sequence_Low_Freq();
 	Sequence_High_Freq();
 
-	HAL_GPIO_TogglePin(SYS_SW2_GPIO_Port, SYS_SW2_Pin);
+//	HAL_GPIO_TogglePin(SYS_SW2_GPIO_Port, SYS_SW2_Pin);
 
   /* USER CODE END ADC1_2_IRQn 1 */
 }

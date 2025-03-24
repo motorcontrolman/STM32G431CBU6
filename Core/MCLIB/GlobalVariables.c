@@ -25,6 +25,7 @@ float gVdc;
 float gTwoDivVdc;
 float gVolume;
 float gPropoDuty;
+float gPropoDuty2;
 float gIuvw[3];
 uint16_t gIuvw_AD[3];
 float gIuvw2[3];

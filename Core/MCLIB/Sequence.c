@@ -42,6 +42,7 @@ void Sequence_Low_Freq(void){
 	uint8_t posMode_pre;
 	uint8_t drvMode_pre;
 	float propoDuty;
+	float propoDuty2;
 
 
 	//read IO signals
@@ -49,7 +50,9 @@ void Sequence_Low_Freq(void){
 	gVolume = 0; //readVolume();
 
 	propoDuty = readPropoDuty();
+	propoDuty2 = readPropoDuty2();
 	gLPF(propoDuty, ANGULARFREQ2Hz, CARRIERCYCLE, &gPropoDuty);
+	gLPF(propoDuty2, ANGULARFREQ2Hz, CARRIERCYCLE, &gPropoDuty2);
 
 	sSensData.Vdc = 10.0f;//readVdc();
 	gLPF(sSensData.Vdc, ANGULARFREQ20Hz, LOWSEQUENCEPERIOD, &sSensData.Vdc_LPF);
@@ -97,8 +100,8 @@ void Sequence_High_Freq(void){
 	readCurrent(sSensData.Iuvw_AD, sSensData.Iuvw_AD_Offset, sSensData.Iuvw);
 
 	// for debug
-	sPosMode = POSMODE_ANGLESENS;//POSMODE_FREERUN;//
-	sDrvMode = DRVMODE_OPENLOOP;
+	sPosMode = POSMODE_ANGLESENS;//POSMODE_FREERUN;//////
+	sDrvMode = DRVMODE_VECTORCONTROL;//DRVMODE_OPENLOOP;//
 	sElectAngVeloRefRateLimit = TWOPI * 10.0f;
 
 
@@ -222,7 +225,7 @@ static inline void slctElectAngleFromPosMode(uint8_t posMode, struct SensorData 
 		sensData->electAngVelo = sElectAngleEstimateData.electAngVeloEstimate;
 		break;
 	case POSMODE_ANGLESENS:
-		sensData->electAngle = gTheta + PI*0.5f;
+		sensData->electAngle = gTheta;
 		sensData->electAngVelo = sElectAngleEstimateData.electAngVeloEstimate;
 		break;
 
@@ -239,8 +242,8 @@ void inline slctCntlFromDrvMode(uint8_t drvMode, struct SensorData sensData, str
 	float ModRef = 1.13;
 	float ModErr;
 
-	vectorControlData->Idq_ref[0] = 0.0f;
-	vectorControlData->Idq_ref[1] = 3.0f;//IQREFMAX * gVolume;
+	vectorControlData->Idq_ref[0] = 2.0f * gPropoDuty2;
+	vectorControlData->Idq_ref[1] = 2.0f * gPropoDuty;//IQREFMAX * gVolume;
 	vectorControlData->Idq_ref_LPF[0] = vectorControlData->Idq_ref[0];
 	vectorControlData->Idq_ref_LPF[1] = vectorControlData->Idq_ref[1];//IQREFMAX * gVolume;
 
