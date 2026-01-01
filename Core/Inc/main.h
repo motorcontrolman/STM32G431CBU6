@@ -28,6 +28,17 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g4xx_hal.h"
+#include "stm32g4xx_ll_i2c.h"
+#include "stm32g4xx_ll_bus.h"
+#include "stm32g4xx_ll_cortex.h"
+#include "stm32g4xx_ll_rcc.h"
+#include "stm32g4xx_ll_system.h"
+#include "stm32g4xx_ll_utils.h"
+#include "stm32g4xx_ll_pwr.h"
+#include "stm32g4xx_ll_gpio.h"
+#include "stm32g4xx_ll_dma.h"
+
+#include "stm32g4xx_ll_exti.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -36,7 +47,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+extern SPI_HandleTypeDef hspi1;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -61,20 +72,17 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define SPI_CS_Pin GPIO_PIN_4
 #define SPI_CS_GPIO_Port GPIOA
+#define DRV_FLT_Pin GPIO_PIN_0
+#define DRV_FLT_GPIO_Port GPIOB
 #define DRV_EN_Pin GPIO_PIN_1
 #define DRV_EN_GPIO_Port GPIOB
 #define PWM_EN_Pin GPIO_PIN_2
 #define PWM_EN_GPIO_Port GPIOB
 #define SYS_SW_Pin GPIO_PIN_12
 #define SYS_SW_GPIO_Port GPIOA
-#define Propo_Pin GPIO_PIN_15
-#define Propo_GPIO_Port GPIOA
-#define Propo2_Pin GPIO_PIN_7
-#define Propo2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-uint8_t SPI_TransmitReceive(SPI_HandleTypeDef * hspi, uint16_t TxData, uint16_t *RxData);
-void SPI_TransmitReceive_lap(void);
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

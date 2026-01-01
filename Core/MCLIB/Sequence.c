@@ -16,6 +16,7 @@
 #include "Sequence.h"
 #include "SixsStep.h"
 #include "VectorControl.h"
+#include "i2c.h"
 
 static uint8_t sPosMode;
 static uint8_t sDrvMode;
@@ -27,6 +28,7 @@ static float sDuty[3];
 static struct SensorData sSensData;
 static struct VectorControlData sVectorControlData;
 static struct ElectAngleEstimateData sElectAngleEstimateData = {0.0f, 0.0f, 0.0f};
+static float sJoyStickXY[2];
 
 static inline void slctPosMode(float electFreq, uint8_t* posMode);
 static inline void slctDrvMode(float electFreq, uint8_t* drvMode);
@@ -36,6 +38,7 @@ static inline void slctElectAngleFromPosMode(uint8_t posMode, struct SensorData 
 static inline void slctCntlFromDrvMode(uint8_t drvMode, struct SensorData sensData, struct VectorControlData *vectorControlData, float* Duty, int8_t* outputMode);
 static inline void calcCurrentRef(uint8_t drvMode, struct VectorControlData *vectorControlData);
 
+uint8_t temp_data[2] = {0};
 
 void Sequence_Low_Freq(void){
 
@@ -47,14 +50,14 @@ void Sequence_Low_Freq(void){
 
 	//read IO signals
 	//gButton1 = readButton1();
+
+	readJoyStickXY(sJoyStickXY);
+
 	gVolume = 0; //readVolume();
 
-	propoDuty = readPropoDuty();
-	propoDuty2 = readPropoDuty2();
-	gLPF(propoDuty, ANGULARFREQ2Hz, CARRIERCYCLE, &gPropoDuty);
-	gLPF(propoDuty2, ANGULARFREQ2Hz, CARRIERCYCLE, &gPropoDuty2);
+	gPropoDuty = sJoyStickXY[1];
 
-	sSensData.Vdc = 10.0f;//readVdc();
+	sSensData.Vdc = readVdc();
 	gLPF(sSensData.Vdc, ANGULARFREQ20Hz, LOWSEQUENCEPERIOD, &sSensData.Vdc_LPF);
 	sSensData.twoDivVdc = gfDivideAvoidZero(2.0f, sSensData.Vdc_LPF, 1.0f);
 
@@ -66,14 +69,14 @@ void Sequence_Low_Freq(void){
 
 		// Get Current Sensor Offset
 		if( sInitCnt <= INITCNTST1){
-			sSensData.Iuvw_AD_Offset[0] = 2110.0f;
-			sSensData.Iuvw_AD_Offset[1] = 2019.0f;
-			sSensData.Iuvw_AD_Offset[2] = 2066.0f;
+			sSensData.Iuvw_AD_Offset[0] = 0.0f;
+			sSensData.Iuvw_AD_Offset[1] = 0.0f;
+			sSensData.Iuvw_AD_Offset[2] = 0.0f;
 		}
 		else if(sInitCnt <= INITCNTST1 + INITCNTST2){
-			//sSensData.Iuvw_AD_Offset[0] += (float)sSensData.Iuvw_AD[0] * ONEDIVINITCNTST2;
-			//sSensData.Iuvw_AD_Offset[1] += (float)sSensData.Iuvw_AD[1] * ONEDIVINITCNTST2;
-			//sSensData.Iuvw_AD_Offset[2] += (float)sSensData.Iuvw_AD[2] * ONEDIVINITCNTST2;
+			sSensData.Iuvw_AD_Offset[0] += (float)sSensData.Iuvw_AD[0] * ONEDIVINITCNTST2;
+			sSensData.Iuvw_AD_Offset[1] += (float)sSensData.Iuvw_AD[1] * ONEDIVINITCNTST2;
+			sSensData.Iuvw_AD_Offset[2] += (float)sSensData.Iuvw_AD[2] * ONEDIVINITCNTST2;
 		}
 	}
 	else {
@@ -93,15 +96,12 @@ void Sequence_Low_Freq(void){
 }
 
 void Sequence_High_Freq(void){
-	// clear Free Running Counter
-	// writeFreeRunCnt(ZERO);
-
-	SPI_TransmitReceive_lap();
+	gTheta = readEncoderAngle();
 	readCurrent(sSensData.Iuvw_AD, sSensData.Iuvw_AD_Offset, sSensData.Iuvw);
 
 	// for debug
-	sPosMode = POSMODE_ANGLESENS;//POSMODE_FREERUN;//////
-	sDrvMode = DRVMODE_VECTORCONTROL;//DRVMODE_OPENLOOP;//
+	sPosMode = POSMODE_ANGLESENS;
+	sDrvMode = DRVMODE_VECTORCONTROL;
 	sElectAngVeloRefRateLimit = TWOPI * 10.0f;
 
 
@@ -110,10 +110,6 @@ void Sequence_High_Freq(void){
 	writeOutputMode(sOutputMode);
 
 	writeDuty(sDuty);
-
-	// Calculate ProcessingLoad
-	//gFreerunCnt = readFreeRunCnt();
-	//gProcessingLoad = (float)gFreerunCnt * ONEDIVCARRIERCNT;
 }
 void inline slctPosMode(float electFreq, uint8_t* posMode){
 
@@ -129,7 +125,6 @@ void inline slctPosMode(float electFreq, uint8_t* posMode){
 		else
 			*posMode = POSMODE_HALL_PLL;
 	}
-
 }
 
 void inline slctDrvMode(float electFreq, uint8_t* drvMode){
@@ -247,16 +242,6 @@ void inline slctCntlFromDrvMode(uint8_t drvMode, struct SensorData sensData, str
 	vectorControlData->Idq_ref_LPF[0] = vectorControlData->Idq_ref[0];
 	vectorControlData->Idq_ref_LPF[1] = vectorControlData->Idq_ref[1];//IQREFMAX * gVolume;
 
-	/*ModErr = ModRef - vectorControlData->Mod;
-	sId_ref_i = sId_ref_i + 0.0003 * ModErr;
-
-	if( sId_ref_i > 0)
-			sId_ref_i = 0;
-	if( sId_ref_i < -1.0f)
-				sId_ref_i = -1.0f;
-
-	Idq_ref[0] = sId_ref_i;*/
-
 	switch(drvMode){
 		case DRVMODE_OFFDUTY:
 			gOffDuty(Duty, outputMode);
@@ -300,4 +285,7 @@ static inline void calcCurrentRef(uint8_t drvMode, struct VectorControlData *vec
 			vectorControlData->Idq_ref_LPF[1] = 0.0f;
 	}
 }
+
+
+
 

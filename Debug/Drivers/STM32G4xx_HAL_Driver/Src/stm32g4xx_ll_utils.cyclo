@@ -1,0 +1,9 @@
+stm32g4xx_ll_utils.c:584:17:UTILS_GetPLLOutputFrequency	1
+stm32g4xx_ll_utils.c:615:20:UTILS_PLL_IsBusy	2
+stm32g4xx_ll_utils.c:170:6:LL_Init1msTick	1
+stm32g4xx_ll_utils.c:186:6:LL_mDelay	4
+stm32g4xx_ll_utils.c:257:6:LL_SetSystemCoreClock	1
+stm32g4xx_ll_utils.c:271:13:LL_SetFlashLatency	20
+stm32g4xx_ll_utils.c:638:20:UTILS_EnablePLLAndSwitchSystem	7
+stm32g4xx_ll_utils.c:406:13:LL_PLL_ConfigSystemClock_HSI	9
+stm32g4xx_ll_utils.c:488:13:LL_PLL_ConfigSystemClock_HSE	10

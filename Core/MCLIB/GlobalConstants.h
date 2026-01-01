@@ -51,9 +51,14 @@
 
 
 // for NIDEC Motor
-#define Ra					0.96f
-#define La					0.00048f * 0.4f
-#define Ke					1.03E-03f
+//　#define Ra					0.96f
+//　#define La					0.00048f * 0.4f
+//　#define Ke					1.03E-03f
+
+// for Roller485
+#define Ra 0.90f
+#define La					4.8E-5f
+#define Ke					0.012f
 
 // for DN Motor
 //#define Ra					0.03f

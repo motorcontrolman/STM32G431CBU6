@@ -1,0 +1,9 @@
+../Core/MCLIB/i2c.c:28:6:I2C1_Start	0	static
+../Core/MCLIB/i2c.c:33:6:I2C1_ClearCR	0	static
+../Core/MCLIB/i2c.c:38:9:I2C1_TransmitData	16	static
+../Core/MCLIB/i2c.c:86:9:I2C1_TransmitData_RepeatedStart	16	static
+../Core/MCLIB/i2c.c:129:9:I2C1_ReceiveData	16	static
+../Core/MCLIB/i2c.c:166:9:I2C_Write_Bytes	16	dynamic
+../Core/MCLIB/i2c.c:176:9:I2C_Write_16bits_reg_Bytes	16	dynamic
+../Core/MCLIB/i2c.c:187:9:I2C_Read_Bytes	32	static
+../Core/MCLIB/i2c.c:198:9:I2C_Read_16bits_reg_Bytes	32	static

@@ -12,6 +12,7 @@
 #include "GlobalConstants.h"
 #include "GlobalVariables.h"
 #include "GeneralFunctions.h"
+#include "i2c.h"
 
 static uint16_t sNoInputCaptureCnt = 0;
 static uint32_t sHallInputCaptureCnt;
@@ -35,6 +36,10 @@ static uint16_t inputCaptureCnt8;
 
 uint16_t Bemf_AD[3];
 
+float angle_corrected;
+
+static inline uint8_t SPI_TransmitReceive(SPI_HandleTypeDef * hspi, uint16_t TxData, uint16_t *RxData);
+
 uint8_t readButton1(void){
 	volatile uint8_t B1;
 
@@ -53,6 +58,7 @@ uint32_t readHallInputCaptureCnt(void){
 	return inputCaptureCnt;
 }
 
+/*
 uint16_t readPropoInputCaptureCnt(void){
 	// Read Input Capture Count of GPIO
 	// CCR1:TIM8 Channel1 = Propo
@@ -61,6 +67,7 @@ uint16_t readPropoInputCaptureCnt(void){
 	inputCaptureCnt = TIM8 -> CCR1;
 	return inputCaptureCnt;
 }
+
 
 float readPropoDuty(void){
 	float propoDuty;
@@ -157,7 +164,7 @@ float readPropoDuty2(void){
 	return propoDuty;
 
 }
-
+*/
 
 float readTimeInterval(uint32_t inputCaptureCnt, uint32_t inputCaptureCnt_pre){
 
@@ -194,9 +201,8 @@ float readVolume(void){
 }
 
 float readVdc(void){
-	// P-NUCLEO-IHM001(or 002), Vdc is connected to PA1(ADC2)
 	float Vdc;
-	uint16_t Vdc_ad = gAdcValue[0];
+	uint16_t Vdc_ad = ADC1 -> JDR1;
 	Vdc = Vdc_ad * AD2VOLTAGE;
 	return Vdc;
 }
@@ -232,17 +238,7 @@ void readElectFreqFromHallSignal(float* electFreq){
 	else
 		*electFreq = 0;
 }
-/*
-void readCurrent2(uint16_t* Iuvw_AD, float* Iuvw){
-	Iuvw_AD[0] = ADC2 -> JDR1; // Iu
-	Iuvw_AD[1] = ADC2 -> JDR2; // Iv
-	Iuvw_AD[2] = ADC2 -> JDR3; // Iw
 
-	Iuvw[0] = ((float)Iuvw_AD[0] - IU2_ADOffSET) * AD2CURRENT;
-	Iuvw[1] = ((float)Iuvw_AD[1] - IV2_ADOffSET) * AD2CURRENT;
-	Iuvw[2] = ((float)Iuvw_AD[2] - IW2_ADOffSET) * AD2CURRENT;
-}
-*/
 
 void writeOutputMode(int8_t outputMode){
 
@@ -279,40 +275,84 @@ uint16_t readFreeRunCnt(void){
 	return Cnt;
 }
 
-/*
-void writeDuty8(float* Duty){
-	// TIM1 -> ARR Means Counter Period of TIM8
-	TIM8 -> CCR1 = Duty[0] * (TIM8 -> ARR);
-	TIM8 -> CCR2 = Duty[1] * (TIM8 -> ARR);
-	TIM8 -> CCR3 = Duty[2] * (TIM8 -> ARR);
+
+float readEncoderAngle(void){
+	uint16_t data_t[2];
+	uint16_t data_r[2];
+	float angle_get;
+	//float angle_corrected;
+	uint16_t	angle;
+	uint16_t	angle_corrected_16bit;
+	float encoderAngle;
+
+
+	data_t[0] = 0x8021;
+	data_t[1] = 0xffff;
+
+
+
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
+	__HAL_SPI_ENABLE(&hspi1);
+	SPI_TransmitReceive(&hspi1, data_t[0],&data_r[0]);
+	SPI_TransmitReceive(&hspi1, data_t[1],&data_r[1]);
+
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_SET);
+
+	angle = (((data_r[1] & 0x7fff) << 1) >> 2);
+	angle_get = 16383.0f - angle;//(float)(~(16383 - angle));
+    if( angle_get > ANGLEOFFSET )
+    {
+        angle_corrected = angle_get - ANGLEOFFSET;
+    }
+    else
+    {
+        angle_corrected = 16383.0f - (ANGLEOFFSET - angle_get);
+    }
+
+    angle_corrected_16bit = (((uint16_t)angle_corrected) << 2 ) * 7;
+    encoderAngle = angle_corrected_16bit * TWOPIDIVBITMAX16;
+    return encoderAngle;
 }
 
-void writeDutyforOpenWinding(float* Duty){
-	if(Duty[0] > 0){
-		TIM1 -> CCR1 = Duty[0] * (TIM1 -> ARR);
-		TIM8 -> CCR1 = 0.0f * (TIM8 -> ARR);
-	}
-	else{
-		TIM1 -> CCR1 = 0.0f * (TIM1 -> ARR);
-		TIM8 -> CCR1 = -1.0f * Duty[0] * (TIM8 -> ARR);
-	}
+static uint8_t SPI_TransmitReceive(SPI_HandleTypeDef * hspi, uint16_t TxData, uint16_t *RxData)
+{
+  volatile uint32_t cnt = 0;
 
-	if(Duty[1] > 0){
-		TIM1 -> CCR2 = Duty[1] * (TIM1 -> ARR);
-		TIM8 -> CCR2 = 0.0f * (TIM8 -> ARR);
-	}
-	else{
-		TIM1 -> CCR2 = 0.0f * (TIM1 -> ARR);
-		TIM8 -> CCR2 = -1.0f * Duty[1] * (TIM8 -> ARR);
-	}
+   while ((hspi->Instance->SR & SPI_SR_TXE) == 0)
+   {
+	;
+   }
+    hspi->Instance->DR = TxData;
 
-	if(Duty[2] > 0){
-		TIM1 -> CCR3 = Duty[2] * (TIM1 -> ARR);
-		TIM8 -> CCR3 = 0.0f * (TIM8 -> ARR);
-	}
-	else{
-		TIM1 -> CCR3 = 0.0f * (TIM1 -> ARR);
-		TIM8 -> CCR3 = -1.0f * Duty[2] * (TIM8 -> ARR);
-	}
+    while ((hspi->Instance->SR & SPI_SR_RXNE)==0)
+     {
+	;
+   	}
+        if((hspi->Instance->SR & SPI_SR_RXNE))
+        {
+            *RxData = hspi->Instance->DR;
+            return 0;
+        }
+        cnt++;
+
+
+    return 1;
+	while ((hspi->Instance->SR & SPI_SR_TXE) == 0);
 }
-*/
+
+void readJoyStickXY(float* joyStickXY){
+    uint8_t i2c_address = 0x63;
+    i2c_address = ((i2c_address << 1) | 1);
+	uint16_t i2c_len = 2;
+	uint16_t i2c_success = 0;
+	uint8_t i2c_reg = 0x10;
+	uint8_t temp_data[2] = {0};
+
+	LL_I2C_Disable(I2C1);
+	I2C1_Start();
+	i2c_success = I2C_Read_Bytes(i2c_address, i2c_reg, temp_data, i2c_len, 10);
+	i2c_success = !i2c_success;
+
+	joyStickXY[0] = ((float)temp_data[0] - 122) * 0.005;
+	joyStickXY[1] = ((float)temp_data[1] - 122) * 0.005;
+}

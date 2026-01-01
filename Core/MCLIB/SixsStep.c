@@ -72,11 +72,6 @@ void sixStepDrive(float DutyRef, uint8_t voltageMode, uint8_t leadAngleModeFlg, 
 	// Output Voltage
 	calcDuty(outputMode, DutyRef, Duty);
 
-	// Output Static Signals
-	outputMode[0] = sOutputMode[0];
-	outputMode[1] = sOutputMode[1];
-	outputMode[2] = sOutputMode[2];
-
 }
 
 void calcElectAngle(uint8_t* hall, float electFreq, uint8_t flgPLL, float* electAngle, float* electAngVelo){
@@ -337,5 +332,9 @@ static void calcDuty(int8_t* outputMode, float DutyRef, float* Duty){
 	Duty[0] = (float)(outputModeMulSwapGain[0] * DutyRef * swapGain);
 	Duty[1] = (float)(outputModeMulSwapGain[1] * DutyRef * swapGain);
 	Duty[2] = (float)(outputModeMulSwapGain[2] * DutyRef * swapGain);
+
+	Duty[0] = gUpperLowerLimit(Duty[0], DUTYUPPER, DUTYLOWER);
+	Duty[1] = gUpperLowerLimit(Duty[1], DUTYUPPER, DUTYLOWER);
+	Duty[2] = gUpperLowerLimit(Duty[2], DUTYUPPER, DUTYLOWER);
 
 }
