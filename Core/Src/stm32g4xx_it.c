@@ -22,6 +22,10 @@
 #include "stm32g4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Sequence.h"
+#include "SignalReadWrite.h"
+#include "GlobalConstants.h"
+#include "GlobalVariables.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,6 +60,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc1;
+extern TIM_HandleTypeDef htim2;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -211,13 +216,28 @@ void ADC1_2_IRQHandler(void)
 
 //  HAL_GPIO_TogglePin(SYS_SW2_GPIO_Port, SYS_SW2_Pin);
 
-	// Sequence Control
-	Sequence_Low_Freq();
+  writeFreeRunCnt(0);
 	Sequence_High_Freq();
+	gFreerunCnt = readFreeRunCnt();
+	//gProcessingLoad = gFreerunCnt * COUNTERPERIOD;
 
 //	HAL_GPIO_TogglePin(SYS_SW2_GPIO_Port, SYS_SW2_Pin);
 
   /* USER CODE END ADC1_2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM2 global interrupt.
+  */
+void TIM2_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM2_IRQn 0 */
+
+  /* USER CODE END TIM2_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim2);
+  /* USER CODE BEGIN TIM2_IRQn 1 */
+  Sequence_Low_Freq();
+  /* USER CODE END TIM2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

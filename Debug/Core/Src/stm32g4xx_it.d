@@ -42,7 +42,11 @@ Core/Src/stm32g4xx_it.o: ../Core/Src/stm32g4xx_it.c ../Core/Inc/main.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_ll_dma.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_ll_dmamux.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_ll_exti.h \
- ../Core/Inc/stm32g4xx_it.h
+ ../Core/Inc/stm32g4xx_it.h \
+ C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/Sequence.h \
+ C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/SignalReadWrite.h \
+ C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/GlobalConstants.h \
+ C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/GlobalVariables.h
 ../Core/Inc/main.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 ../Core/Inc/stm32g4xx_hal_conf.h:
@@ -88,3 +92,7 @@ Core/Src/stm32g4xx_it.o: ../Core/Src/stm32g4xx_it.c ../Core/Inc/main.h \
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_ll_dmamux.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_ll_exti.h:
 ../Core/Inc/stm32g4xx_it.h:
+C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/Sequence.h:
+C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/SignalReadWrite.h:
+C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/GlobalConstants.h:
+C:/Users/r720r/STM32CubeIDE/workspace_1.12.1/STM32G431CBU6/Core/MCLIB/GlobalVariables.h:
